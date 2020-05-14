@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="css/style.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+    <h1>Party Scheduler</h1>
+    <form id="info" name="info" method="post" action="confirm.php">
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" required>
+        <label for="video">VideoID:</label>
+        <input type="text" name="video" id="video" required>
+        <label for="langth">Video Length in Seconds:</label>
+        <input type="text" name="langth" id="langth" required>
+        <label for="time">Epoch Time of Party (See <a target="_blank" rel="noopener noreferrer" href="https://www.epochconverter.com/">https://www.epochconverter.com/</a>):</label>
+        <input type="text" name="time" id="time" required>
+        <input type="submit" value="Confirm">
+    </form>
+</body>
+</html>
