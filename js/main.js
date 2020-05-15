@@ -4,10 +4,17 @@ var l3 = false;
 var tag = document.createElement('script');
 var firstScriptTag = document.getElementsByTagName('script')[0];
 var player;
+var itime;
+$.get("party_info/intermission_time.txt", function(data){
+    itime = data;
+});
+var ilength;
+$.get("party_info/intermission_length.txt", function(data){
+    ilength = data;
+});
 var video_started;
 $.get("party_info/date.txt", function(data){
     video_started = Number(data);
-    setInterval(timestamp, 100);
     l1 = true;
     load_player();
 });
@@ -27,16 +34,31 @@ var true_timestamp;
 var hours;
 var minutes;
 var seconds;
+var is_intermission = false;
 
 function load_player() {
     if (l1 === true && l2 === true && l3 === true) {
         tag.src = "https://www.youtube.com/iframe_api";
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        setInterval(timestamp, 100);
     }
 }
 function timestamp_calc() {
     var now = new Date();
-    true_timestamp = (Number(now.getTime())/1000 - video_started);
+    if (ilength === 0 || itime > (now.getTime()/1000) - video_started) {
+        true_timestamp = (Number(now.getTime())/1000 - video_started);
+        is_intermission = false;
+    } else if (itime <= (now.getTime()/1000 - video_started) && itime + ilength > (now.getTime()/1000 - video_started)) {
+        true_timestamp = itime;
+        is_intermission = true;
+    } else if (itime + ilength <= (now.getTime()/1000 - video_started)) {
+        true_timestamp = (Number(now.getTime())/1000 - video_started) - ilength;
+        is_intermission = false;
+    }
+    if (itime + ilength == Math.round(now.getTime()/1000 - video_started)) {
+        player.playVideo(); //This may be bad practice. I placed this statement in timestamp_calc() because now is defined here, but all my other player controllers are in timestamp().
+        player.seekTo(true_timestamp, true);
+    }
     var HMSTime = Math.abs(true_timestamp);
     hours = Math.floor(HMSTime / 3600);
     HMSTime %= 3600;
@@ -48,10 +70,16 @@ function timestamp() {
     if (Math.round(true_timestamp) == -2) {
         player.playVideo();
     }
-    if (true_timestamp >= 0 && true_timestamp < video_length){
+    if (is_intermission === true) {
+        player.pauseVideo();
+    }
+    if (true_timestamp >= 0 && true_timestamp < video_length && is_intermission === false){
         document.getElementById("friends").innerHTML = 'The party is at ' + hours + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toFixed(1).toString().padStart(4, "0") + "!";
         document.getElementById("refresh").style.display = 'block';
         document.getElementById("refresh").onclick = function() {player.playVideo(), player.seekTo(true_timestamp, true)};
+    } else if (is_intermission === true){
+        document.getElementById("friends").innerHTML = "It's intermission! We're paused at " + hours + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toFixed(1).toString().padStart(4, "0") + "!";
+        document.getElementById("refresh").style.display = 'none';
     } else if (true_timestamp >= video_length){
         document.getElementById("refresh").style.display = 'none';
         document.getElementById("friends").innerHTML = "There's no party here!<br />Go home, you rascally kids!";
@@ -62,7 +90,7 @@ function timestamp() {
 }
 function onYouTubeIframeAPIReady() {
     timestamp_calc();
-    if (true_timestamp >= 0 && true_timestamp < video_length && id !== undefined){
+    if (true_timestamp >= 0 && true_timestamp < video_length && is_intermission === false){
         player = new YT.Player('player', {
             height: '538',
             width: '956',
@@ -75,7 +103,7 @@ function onYouTubeIframeAPIReady() {
         });
     } else if (true_timestamp >= video_length) {
         player = null;
-    } else if (id !== undefined) {
+    } else {
         player = new YT.Player('player', {
             height: '538',
             width: '956',
@@ -85,12 +113,10 @@ function onYouTubeIframeAPIReady() {
                 'onStateChange': onPlayerStateChange
             }
         });
-    } else {
-        alert("You aren't supposed to be seeing this. An error has occured. Try again by refreshing with your browser's refresh button.");
     }
 }
 function onPlayerReady(event) {
-    if (true_timestamp >= 0){
+    if (true_timestamp >= 0 && is_intermission === false){
         event.target.playVideo();
     }
 }
