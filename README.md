@@ -6,4 +6,5 @@ This website works by:
 Because of the fact that nearly all html objects are governed by javascript, this process can be customized to your heart's content. Since the iplayer does not exist in index.html, and whether or not it loads could be governed by an "if" statement in main.js, we could potentially expand the website to work for video files and videos from other websites.
 
 Major Changes:
+
 5/15/20: Intermission system complete
