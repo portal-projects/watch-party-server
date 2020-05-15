@@ -20,6 +20,26 @@ if(isset($_POST['password'])) {
             fwrite($fp, $data);
             fclose($fp);
         }
+        if(!empty($_POST['itime'])) {
+            $data=$_POST['itime'];
+            $fp = fopen('party_info/intermission_time.txt', 'w');
+            fwrite($fp, $data);
+            fclose($fp);
+        } else {
+            $fp = fopen('party_info/intermission_time.txt', 'w');
+            fwrite($fp, '0');
+            fclose($fp);
+        }
+        if(!empty($_POST['ilength'])) {
+            $data=$_POST['ilength'];
+            $fp = fopen('party_info/intermission_length.txt', 'w');
+            fwrite($fp, $data);
+            fclose($fp);
+        } else {
+            $fp = fopen('party_info/intermission_length.txt', 'w');
+            fwrite($fp, '0');
+            fclose($fp);
+        }
         echo '<script type="text/javascript">',
         'alert("success")',
         '</script>';
