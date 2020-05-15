@@ -1,22 +1,39 @@
+var l1 = false;
+var l2 = false;
+var l3 = false;
+var tag = document.createElement('script');
+var firstScriptTag = document.getElementsByTagName('script')[0];
+var player;
 var video_started;
 $.get("party_info/date.txt", function(data){
     video_started = Number(data);
     setInterval(timestamp, 100);
+    l1 = true;
+    load_player();
 });
 var video_length; //Maybe I'll have this stored server-side, where it recieves player.getDuration() as soon as the videoID and time are recieved. Right now, getDuration() cannot be used, because it only loads after the video has played.
 $.get("party_info/video_length.txt", function(data){
     video_length = Number(data);
+    l2 = true;
+    load_player();
 });
 var id;
-var tag = document.createElement('script');
-var firstScriptTag = document.getElementsByTagName('script')[0];
-$.get("party_info/id.txt", function(data) {id = data;tag.src = "https://www.youtube.com/iframe_api";firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);}, "text");
-var player;
+$.get("party_info/id.txt", function(data){
+    id = data;
+    l3 = true;
+    load_player();
+}, "text");
 var true_timestamp;
 var hours;
 var minutes;
 var seconds;
 
+function load_player() {
+    if (l1 === true && l2 === true && l3 === true) {
+        tag.src = "https://www.youtube.com/iframe_api";
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    }
+}
 function timestamp_calc() {
     var now = new Date();
     true_timestamp = (Number(now.getTime())/1000 - video_started);
