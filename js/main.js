@@ -90,7 +90,7 @@ function timestamp() {
         document.getElementById("refresh").style.display = 'none';
     }
 }
-function onYouTubeIframeAPIReady() {
+function onYouTubeIframeAPIReady() { //I will soon make it possible for audio elements to be created as well, and make a "Listen Party" option
     timestamp_calc();
     if (true_timestamp >= 0 && true_timestamp < video_length && is_intermission === false){
         player = new YT.Player('player', {
