@@ -35,6 +35,7 @@ var hours;
 var minutes;
 var seconds;
 var is_intermission = false;
+var intermission_time;
 
 function load_player() {
     if (l1 === true && l2 === true && l3 === true) {
@@ -50,12 +51,13 @@ function timestamp_calc() {
         is_intermission = false;
     } else if (itime <= (now.getTime()/1000 - video_started) && itime + ilength > (now.getTime()/1000 - video_started)) {
         true_timestamp = itime;
+        intermission_time = (itime + ilength) - (now.getTime()/1000 - video_started);
         is_intermission = true;
     } else if (itime + ilength <= (now.getTime()/1000 - video_started)) {
         true_timestamp = (Number(now.getTime())/1000 - video_started) - ilength;
         is_intermission = false;
     }
-    if (itime + ilength == Math.round(now.getTime()/1000 - video_started)) {
+    if (itime + ilength == Math.ceil(now.getTime()/1000 - video_started)) {
         player.playVideo(); //This may be bad practice. I placed this statement in timestamp_calc() because now is defined here, but all my other player controllers are in timestamp().
         player.seekTo(true_timestamp, true);
     }
@@ -67,7 +69,7 @@ function timestamp_calc() {
 }
 function timestamp() {
     timestamp_calc();
-    if (Math.round(true_timestamp) == -2) {
+    if (Math.floor(true_timestamp) == -2) {
         player.playVideo();
     }
     if (is_intermission === true) {
@@ -81,7 +83,7 @@ function timestamp() {
         document.getElementById("refresh").style.display = 'none';
         document.getElementById("friends").innerHTML = "There's no party here!<br />Go home, you rascally kids!";
     } else if (is_intermission === true){
-        document.getElementById("friends").innerHTML = "It's intermission! We're paused at " + hours + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toFixed(1).toString().padStart(4, "0") + "!";
+        document.getElementById("friends").innerHTML = "It's intermission! We're paused at " + hours + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toFixed(1).toString().padStart(4, "0") + "!" + "<br />The party resumes in " + Math.floor(intermission_time / 60).toString().padStart(2, "0") + ":" + (intermission_time % 60).toFixed(1).toString().padStart(4, "0"); //Whew! That's an eyeful!
         document.getElementById("refresh").style.display = 'none';
     } else {
         document.getElementById("friends").innerHTML = 'The party starts in ' + hours + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toFixed(1).toString().padStart(4, "0") + "!";
