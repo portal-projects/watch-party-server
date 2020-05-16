@@ -6,11 +6,11 @@ var firstScriptTag = document.getElementsByTagName('script')[0];
 var player;
 var itime;
 $.get("party_info/intermission_time.txt", function(data){
-    itime = data;
+    itime = Number(data);
 });
 var ilength;
 $.get("party_info/intermission_length.txt", function(data){
-    ilength = data;
+    ilength = Number(data);
 });
 var video_started;
 $.get("party_info/date.txt", function(data){
@@ -40,7 +40,7 @@ function load_player() {
     if (l1 === true && l2 === true && l3 === true) {
         tag.src = "https://www.youtube.com/iframe_api";
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        setInterval(timestamp, 100);
+        timestamp();
     }
 }
 function timestamp_calc() {
@@ -77,12 +77,12 @@ function timestamp() {
         document.getElementById("friends").innerHTML = 'The party is at ' + hours + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toFixed(1).toString().padStart(4, "0") + "!";
         document.getElementById("refresh").style.display = 'block';
         document.getElementById("refresh").onclick = function() {player.playVideo(), player.seekTo(true_timestamp, true)};
-    } else if (is_intermission === true){
-        document.getElementById("friends").innerHTML = "It's intermission! We're paused at " + hours + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toFixed(1).toString().padStart(4, "0") + "!";
-        document.getElementById("refresh").style.display = 'none';
     } else if (true_timestamp >= video_length){
         document.getElementById("refresh").style.display = 'none';
         document.getElementById("friends").innerHTML = "There's no party here!<br />Go home, you rascally kids!";
+    } else if (is_intermission === true){
+        document.getElementById("friends").innerHTML = "It's intermission! We're paused at " + hours + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toFixed(1).toString().padStart(4, "0") + "!";
+        document.getElementById("refresh").style.display = 'none';
     } else {
         document.getElementById("friends").innerHTML = 'The party starts in ' + hours + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toFixed(1).toString().padStart(4, "0") + "!";
         document.getElementById("refresh").style.display = 'none';
@@ -116,6 +116,7 @@ function onYouTubeIframeAPIReady() {
     }
 }
 function onPlayerReady(event) {
+    setInterval(timestamp, 100);
     if (true_timestamp >= 0 && is_intermission === false){
         event.target.playVideo();
     }
