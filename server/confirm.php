@@ -1,7 +1,7 @@
 <?php
 if(isset($_POST['password'])) {
     $data=$_POST['password'];
-    if (password_verify($data, '$2y$10$wm4gIzt.EyFvSJB85pR3peOFor0hfCq9l1K/R9.4aXpLTuGu5JtFW')) {
+    if ($data === getenv('ADMIN_PASSWORD')) {
         if(isset($_POST['video'])) {
             $data=$_POST['video'];
             $fp = fopen('party_info/id.txt', 'w');

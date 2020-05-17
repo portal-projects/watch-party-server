@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <script src="js/form.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
+
 <body>
     <h1>Party Scheduler</h1>
     <form id="info" name="info" method="post" action="confirm.php">
@@ -11,8 +14,9 @@
         <label for="video">VideoID:</label>
         <input type="text" name="video" id="video" required>
         <label for="langth">Video Length in Seconds:</label>
-        <input type="text" name="langth" id="langth" required>
-        <label for="time">Epoch Time of Party (See <a target="_blank" rel="noopener noreferrer" href="https://www.epochconverter.com/">https://www.epochconverter.com/</a>):</label>
+        <input type="text" name="langth" id="langth" required value="3600">
+        <label for="time">Epoch Time of Party (See <a target="_blank" rel="noopener noreferrer"
+                href="https://www.epochconverter.com/">https://www.epochconverter.com/</a>):</label>
         <input type="text" name="time" id="time" required>
         <label for="intermission"><br />Include an intermission?</label>
         <input type="checkbox" name="intermission" id="intermission" onclick="isthereani()">
@@ -22,5 +26,13 @@
         <input type="text" name="itime" id="itime" style="display:none">
         <input type="submit" value="Confirm">
     </form>
+    <script>
+        $(function () {
+            $('input#video').val('nM9f0W2KD5s');
+            $('input#langth').val('3600');
+            $('input#time').val((Math.floor((new Date()).getTime()/1000) + 60));
+        });
+    </script>
 </body>
+
 </html>
