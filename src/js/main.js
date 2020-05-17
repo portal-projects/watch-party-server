@@ -5,31 +5,20 @@ var tag = document.createElement('script');
 var firstScriptTag = document.getElementsByTagName('script')[0];
 var player;
 var itime;
-$.get("party_info/intermission_time.txt", function(data){
-    itime = Number(data);
-});
 var ilength;
-$.get("party_info/intermission_length.txt", function(data){
-    ilength = Number(data);
-});
 var video_started;
-$.get("party_info/date.txt", function(data){
-    video_started = Number(data);
-    l1 = true;
+var video_length;
+$.get("api/party_info", function(data){
+    console.log('data');
+    itime = Number(data.intermission_time);
+    ilength = Number(data.intermission_length);
+    video_started = Number(data.video_start_time);
+    video_length = Number(data.video_length);
+    id = data.id;
+    l1 = l2 = l3 = true;
     load_player();
 });
-var video_length; //Maybe I'll have this stored server-side, where it recieves player.getDuration() as soon as the videoID and time are recieved. Right now, getDuration() cannot be used, because it only loads after the video has played.
-$.get("party_info/video_length.txt", function(data){
-    video_length = Number(data);
-    l2 = true;
-    load_player();
-});
-var id;
-$.get("party_info/id.txt", function(data){
-    id = data;
-    l3 = true;
-    load_player();
-}, "text");
+
 var true_timestamp;
 var hours;
 var minutes;
