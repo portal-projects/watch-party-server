@@ -10,6 +10,7 @@ start-prod:
 
 stop:
 	docker-compose down
+	docker-compose -f docker-compose-prod-images.yml down
 
 status:
 	docker-compose ps

@@ -8,7 +8,16 @@ var itime;
 var ilength;
 var video_started;
 var video_length;
-$.get("api/party_info", function(data){
+function getHost() {
+    if (location.href.split('http://localhost:8080').length === 2) {
+        return ""; // local dev
+    }
+    if (location.href.split('http://localhost').length === 2) {
+        return "http://localhost:8080/"; // local prod testing
+    }
+    return "https://theportal.herolfg.com/";
+}
+$.get(getHost() + "api/party_info", function(data){
     console.log('data');
     itime = Number(data.intermission_time);
     ilength = Number(data.intermission_length);

@@ -52,6 +52,7 @@ if (isset($_POST['password'])) {
         $fp = fopen('/app/api/party_info/data.json', 'w');
         fwrite($fp, json_encode($party_info));
         fclose($fp);
+        header('Access-Control-Allow-Origin: *');
         header('Content-Type: application/json');
         echo json_encode(['status' => 'ok']);
     } else {

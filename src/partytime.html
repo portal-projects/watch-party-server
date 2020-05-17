@@ -28,8 +28,18 @@
     </form>
     <script>
         $(function () {
+            function getHost() {
+                if (location.href.split('http://localhost:8080').length === 2) {
+                    return ""; // local dev
+                }
+                if (location.href.split('http://localhost').length === 2) {
+                    return "http://localhost:8080/"; // local prod testing
+                }
+                return "https://theportal.herolfg.com/";
+            }
+
             $('input#video').val('nM9f0W2KD5s');
-            $('input#time').val((Math.floor((new Date()).getTime()/1000) + 60));
+            $('input#time').val((Math.floor((new Date()).getTime() / 1000) + 60));
             $('form#info').on('submit', (e) => {
                 console.log('form submit');
                 e.preventDefault();
@@ -42,7 +52,7 @@
                     payload['ilength'] = $('input#ilength').val();
                     payload['itime'] = $('input#itime').val();
                 }
-                $.post('api/party_info', payload).then((response) => {
+                $.post(getHost() + 'api/party_info', payload).then((response) => {
                     if (response.status === 'error') {
                         alert(`There was an error: ${response.error}`);
                     } else {
