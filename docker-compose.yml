@@ -17,4 +17,4 @@ services:
     volumes:
       - ./server:/app
     environment:
-      ADMIN_PASSWORD: gavinwashere
+      ADMIN_PASSWORD: ${PORTAL_WATCH_PARTY_ADMIN_PASSWORD}

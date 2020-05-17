@@ -11,3 +11,6 @@ status:
 
 followlogs:
 	docker-compose logs -f
+
+password:
+	docker-compose exec -T php sh -c 'echo $$ADMIN_PASSWORD'
