@@ -3,6 +3,11 @@ start:
 	docker-compose down
 	docker-compose up -d
 
+start-prod:
+	docker-compose down
+	docker-compose -f docker-compose-prod-images.yml down
+	docker-compose -f docker-compose-prod-images.yml up -d
+
 stop:
 	docker-compose down
 
