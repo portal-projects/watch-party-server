@@ -56,6 +56,6 @@ if (isset($_POST['password'])) {
         echo json_encode(['status' => 'ok']);
     } else {
         header('Content-Type: application/json');
-        echo json_encode(['status' => 'error']);
+        echo json_encode(['status' => 'error', 'error' => 'what are trying to do?']);
     }
 }
