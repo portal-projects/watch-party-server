@@ -15,7 +15,7 @@ function getHost() {
     if (location.href.split('http://localhost').length === 2) {
         return "http://localhost:8080/"; // local prod testing
     }
-    return "http://ec2-52-201-50-176.compute-1.amazonaws.com:8080/";
+    return "https://theportal.herolfg.com/";
 }
 $.get(getHost() + "api/party_info", function(data){
     console.log('data');
