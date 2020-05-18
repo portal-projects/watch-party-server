@@ -17,3 +17,12 @@ services:
       YOUTUBE_API_KEY: ${PORTAL_WATCH_PARTY_YOUTUBE_API_KEY}
     volumes:
       - ./server/api/party_info/data.json:/app/api/party_info/data.json
+  redis:
+    image: redis
+    volumes:
+      - watch-party-redis-volume:/dta:delegated
+    ports:
+      - 6379:6379
+
+volumes:
+  watch-party-redis-volume:

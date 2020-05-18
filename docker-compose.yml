@@ -12,9 +12,21 @@ services:
 
   php:
     working_dir: /app
-    image: "php:fpm-alpine3.11"
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
     volumes:
       - ./server:/app
     environment:
       ADMIN_PASSWORD: ${PORTAL_WATCH_PARTY_ADMIN_PASSWORD}
       YOUTUBE_API_KEY: ${PORTAL_WATCH_PARTY_YOUTUBE_API_KEY}
+
+  redis:
+    image: redis
+    volumes:
+      - watch-party-redis-volume:/dta:delegated
+    ports:
+      - 6379:6379
+
+volumes:
+  watch-party-redis-volume:

@@ -49,9 +49,9 @@ if (isset($_POST['password'])) {
         if (!empty($_POST['ilength'])) {
             $party_info['intermission_length'] = $_POST['ilength'];
         }
-        $fp = fopen('/app/api/party_info/data.json', 'w');
-        fwrite($fp, json_encode($party_info));
-        fclose($fp);
+
+        $client = new Predis\Client(['host' => 'redis']);
+        $client->set('party_info_default', json_encode($party_info));
         header('Access-Control-Allow-Origin: *');
         header('Content-Type: application/json');
         echo json_encode(['status' => 'ok']);

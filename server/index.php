@@ -1,5 +1,8 @@
 <?php
 
+
+require_once('/app/vendor/autoload.php');
+
 $request = $_SERVER['REQUEST_URI'];
 $params = explode('/', $request);
 $route = $params[2];
