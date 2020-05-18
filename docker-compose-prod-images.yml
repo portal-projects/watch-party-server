@@ -15,8 +15,7 @@ services:
     environment:
       ADMIN_PASSWORD: ${PORTAL_WATCH_PARTY_ADMIN_PASSWORD}
       YOUTUBE_API_KEY: ${PORTAL_WATCH_PARTY_YOUTUBE_API_KEY}
-    volumes:
-      - ./server/api/party_info/data.json:/app/api/party_info/data.json
+
   redis:
     image: redis
     volumes:
