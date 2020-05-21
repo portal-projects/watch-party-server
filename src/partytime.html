@@ -4,6 +4,15 @@
 <head>
     <script src="js/form.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        form {
+            max-width: 400px;
+            display: grid;
+        }
+        input {
+            margin-bottom: 15px;
+        }
+    </style>
 </head>
 
 <body>
@@ -11,19 +20,25 @@
     <form id="info" name="info">
         <label for="password">Password:</label>
         <input type="password" name="password" id="password" required>
-        <label for="video">VideoID:</label>
-        <input type="text" name="video" id="video" required>
-        <!-- <label for="langth">Video Length in Seconds:</label>
-        <input type="text" name="langth" id="langth"> -->
         <label for="time">Epoch Time of Party (See <a target="_blank" rel="noopener noreferrer"
                 href="https://www.epochconverter.com/">https://www.epochconverter.com/</a>):</label>
         <input type="text" name="time" id="time" required>
+        <div>
+            <label for="youtube"><br />YouTube Video</label>
+            <input type="radio" name="mediatype" id="youtube" value="youtube" onclick="audioorvideo()" required>
+            <label for="audio">Audio</label>
+            <input type="radio" name="mediatype" id="audio" value="mp3" onclick="audioorvideo()" required>
+        </div>
+        <label for="video" id="idl" style="display:none"><br />VideoID:</label>
+        <input type="hidden" name="medialink" id="video" required>
+        <label for="afile" id="al" style="display:none"><br />Audio file link (MUST be .mp3):</label>
+        <input type="hidden" name="medialink" id="afile" required>
         <label for="intermission"><br />Include an intermission?</label>
         <input type="checkbox" name="intermission" id="intermission" onclick="isthereani()">
         <label for="ilength" id="il1" style="display:none">How long will the intermission be (in seconds)?</label>
-        <input type="text" name="ilength" id="ilength" style="display:none">
+        <input type="hidden" name="ilength" id="ilength">
         <label for="itime" id="il2" style="display:none">At what point in the video will it start (in seconds)?</label>
-        <input type="text" name="itime" id="itime" style="display:none">
+        <input type="hidden" name="itime" id="itime">
         <input type="submit" value="Confirm">
     </form>
     <script>
@@ -39,19 +54,24 @@
             }
 
             $('input#video').val('nM9f0W2KD5s');
+            $('input#afile').val('https://content.production.cdn.art19.com/validation=1590109235,fb3efb64-d9b1-55b7-a0f0-5b8b11e27825,IlmSsoZNu6GxcnJ0TKYfGwi478g/episodes/6740c1c3-c9d2-4ecc-a3df-0ed32f0ddba0/4537d200722917c887587bd5cb25c3c472cca3899735f092b3b1ba997de0e7785ceb97a2459b67c60515701c65721038a6b78f144aef8e3b88f34763c2000bb3/KM1843288847.mp3');
             $('input#time').val((Math.floor((new Date()).getTime() / 1000) + 60));
             $('form#info').on('submit', (e) => {
-                console.log('form submit');
                 e.preventDefault();
                 const payload = {
                     'password': $('input#password').val(),
-                    'video': $('input#video').val(),
+                    'video_id': $('input#video').val(),
                     'time': $('input#time').val()
                 };
+
+                payload['type'] = $('input[name=mediatype]:checked', 'form#info').val();
+                payload['mp3_link'] = $('input#afile').val();
+
                 if ($('input#intermission').val()) {
-                    payload['ilength'] = $('input#ilength').val();
-                    payload['itime'] = $('input#itime').val();
+                    payload['intermission_length'] = $('input#ilength').val();
+                    payload['intermission_time'] = $('input#itime').val();
                 }
+
                 $.post(getHost() + 'api/party_info', payload).then((response) => {
                     if (response.status === 'error') {
                         alert(`There was an error: ${response.error}`);
@@ -64,6 +84,7 @@
                     }
                 });
             });
+            $('input#youtube').click();
         });
     </script>
 </body>
