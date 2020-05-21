@@ -2,23 +2,26 @@
 
 if (isset($_POST['password'])) {
     $party_info = [
-        'id' => null,
-        'video_length' => 0,
-        'video_start_time' => 0,
+        'type' => null,
+        'video_id' => null,
+        'mp3_link' => null,
+        'length' => 0,
+        'time' => 0,
         'intermission_time' => 0,
         'intermission_length' => 0
     ];
 
-    $data = $_POST['password'];
     $id = null;
-    if ($data === getenv('ADMIN_PASSWORD')) {
-        if (isset($_POST['video'])) {
-            $id = $party_info['id'] = $_POST['video'];
+    if ($_POST['password'] === getenv('ADMIN_PASSWORD')) {
+        foreach ($party_info as $key => $value) {
+            if (isset($_POST[$key])) {
+                $party_info[$key] = $_POST[$key];
+            }
         }
-        if (isset($_POST['langth'])) {
-            $party_info['video_length'] = $_POST['langth'];
-        } else {
+
+        if ($party_info['type'] === 'youtube') {
             $api_key = getenv('YOUTUBE_API_KEY');
+            $id = $party_info['video_id'];
             $url = "https://www.googleapis.com/youtube/v3/videos?id={$id}&part=contentDetails&key={$api_key}";
 
             $ch = curl_init();
@@ -39,15 +42,6 @@ if (isset($_POST['password'])) {
             $future->add(new DateInterval($video_length));
             $now = new DateTime();
             $party_info['video_length'] = $future->getTimeStamp() - $now->getTimestamp();
-        }
-        if (isset($_POST['time'])) {
-            $party_info['video_start_time'] = $_POST['time'];
-        }
-        if (!empty($_POST['itime'])) {
-            $party_info['intermission_time'] = $_POST['itime'];
-        }
-        if (!empty($_POST['ilength'])) {
-            $party_info['intermission_length'] = $_POST['ilength'];
         }
 
         $client = new Predis\Client(['host' => 'redis']);
