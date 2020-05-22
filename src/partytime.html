@@ -54,8 +54,10 @@
             }
 
             $('input#video').val('nM9f0W2KD5s');
-            $('input#afile').val('https://content.production.cdn.art19.com/validation=1590109235,fb3efb64-d9b1-55b7-a0f0-5b8b11e27825,IlmSsoZNu6GxcnJ0TKYfGwi478g/episodes/6740c1c3-c9d2-4ecc-a3df-0ed32f0ddba0/4537d200722917c887587bd5cb25c3c472cca3899735f092b3b1ba997de0e7785ceb97a2459b67c60515701c65721038a6b78f144aef8e3b88f34763c2000bb3/KM1843288847.mp3');
             $('input#time').val((Math.floor((new Date()).getTime() / 1000) + 60));
+            $('input#afile').val('').keyup((e) => {
+                $('#audio-file-player').attr('src', e.target.value);
+            });
             $('form#info').on('submit', (e) => {
                 e.preventDefault();
                 const payload = {
@@ -72,7 +74,8 @@
                     payload['intermission_time'] = $('input#itime').val();
                 }
                 if (payload['type'] === 'mp3') {
-                    payload['length'] = document.getElementById('audio-file-player').duration;
+                    const player = document.getElementById('audio-file-player');
+                    payload['length'] = player.duration;
                 }
 
                 $.post(getHost() + 'api/party_info', payload).then((response) => {

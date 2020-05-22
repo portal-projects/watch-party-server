@@ -26,20 +26,21 @@ function audioorvideo() {
     var idlabel = document.getElementById("idl");
     var alabel = document.getElementById("al");
     if (isyoutube.checked === true) {
-        audiosrc.value = audiosrc.defaultValue;
         vidID.type = "text";
         audiosrc.type = "hidden";
         idlabel.style.display = "block";
         alabel.style.display = "none";
     }
     if (isaudio.checked === true) {
-        vidID.value = vidID.defaultValue;
         vidID.type = "hidden";
         audiosrc.type = "text";
         idlabel.style.display = "none";
         alabel.style.display = "block";
-        player = document.createElement("audio");
-        player.id = 'audio-file-player';
+        player = document.getElementById('audio-file-player');
+        if (!player) {
+            player = document.createElement("audio");
+            player.id = 'audio-file-player';
+        }
         player.src = audiosrc.value;
         document.body.appendChild(player);
     }
