@@ -23,7 +23,7 @@ $.get(getHost() + "api/party_info", function (data) {
     itime = Number(data.intermission_time);
     ilength = Number(data.intermission_length);
     video_started = Number(data.time);
-    video_length = Number(data.video_length);
+    video_length = Number(data.length);
     isaudio = data.type === 'mp3';
     audiosrc = data.mp3_link;
     id = data.video_id;

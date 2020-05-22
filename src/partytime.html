@@ -71,6 +71,9 @@
                     payload['intermission_length'] = $('input#ilength').val();
                     payload['intermission_time'] = $('input#itime').val();
                 }
+                if (payload['type'] === 'mp3') {
+                    payload['length'] = document.getElementById('audio-file-player').duration;
+                }
 
                 $.post(getHost() + 'api/party_info', payload).then((response) => {
                     if (response.status === 'error') {

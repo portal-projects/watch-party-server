@@ -8,7 +8,8 @@ if (isset($_POST['password'])) {
         'length' => 0,
         'time' => 0,
         'intermission_time' => 0,
-        'intermission_length' => 0
+        'intermission_length' => 0,
+        'length' => 0
     ];
 
     $id = null;
@@ -41,7 +42,7 @@ if (isset($_POST['password'])) {
             $future = new DateTime();
             $future->add(new DateInterval($video_length));
             $now = new DateTime();
-            $party_info['video_length'] = $future->getTimeStamp() - $now->getTimestamp();
+            $party_info['length'] = $future->getTimeStamp() - $now->getTimestamp();
         }
 
         $client = new Predis\Client(['host' => 'redis']);

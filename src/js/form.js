@@ -38,5 +38,9 @@ function audioorvideo() {
         audiosrc.type = "text";
         idlabel.style.display = "none";
         alabel.style.display = "block";
+        player = document.createElement("audio");
+        player.id = 'audio-file-player';
+        player.src = audiosrc.value;
+        document.body.appendChild(player);
     }
 }
