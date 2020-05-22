@@ -1,6 +1,5 @@
 <?php
 
-
 require_once('../../../../app/vendor/autoload.php');
 
 $request = $_SERVER['REQUEST_URI'];
@@ -22,4 +21,3 @@ try {
     header('Content-Type: application/json');
     echo json_encode(['status' => 'error', 'error' => $e->getMessage()]);
 }
-
