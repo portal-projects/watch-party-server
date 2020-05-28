@@ -2,11 +2,13 @@
 start:
 	docker-compose down
 	docker-compose up -d
+	docker-compose exec -T php composer install
 
 start-prod:
 	docker-compose down
 	docker-compose -f docker-compose-prod-images.yml down
 	docker-compose -f docker-compose-prod-images.yml up -d
+	docker-compose -f docker-compose-prod-images.yml exec -T php composer install
 
 stop:
 	docker-compose down
