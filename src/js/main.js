@@ -31,25 +31,27 @@ $.get(getHost() + "api/party_info", function (data) {
     audiosrc = data.mp3_link;
     id = data.video_id;
     details = String(data.info_url);
-	//Turn into php. "isREALLYlive" will need a new, server-based definition.
-    $.getJSON(details, function(data) {
-        if (data["items"].length) {
-            if (data["items"][0]["contentDetails"]["duration"] == "P0D") {
-                isREALLYlive = true;
+    //Turn into php. "isREALLYlive" will need a new, server-based definition.
+    if (islive) {
+        $.get(getHost() + `api/video_length?video_id=${id}`, (videoLengthInfo) => {
+            if (videoLengthInfo["items"].length) {
+                if (videoLengthInfo["items"][0]["contentDetails"]["duration"] == "P0D") {
+                    isREALLYlive = true;
+                } else {
+                    isREALLYlive = false;
+                }
+                l2 = true;
+                load_player(); //necessary?
             } else {
+                //No private parties allowed!
                 isREALLYlive = false;
+                video_length = -1;
+                l2 = true;
+                load_player(); //necessary?
             }
-		    l2 = true;
-    		load_player(); //necessary?
-        } else {
-			//No private parties allowed!
-			isREALLYlive = false;
-	    	video_length = -1;
-		    l2 = true;
-    		load_player(); //necessary?
-        }
-    });
-	//^
+        });
+    }
+
     l1 = true;
     load_player();
 });
@@ -64,15 +66,15 @@ function load_player() {
     if (l1 === true && l2 === true && isaudio === false) {
         tag.src = "https://www.youtube.com/iframe_api";
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-		if (islive === false && isREALLYlive === false) { //I don't want vtimestamp() to run if it's a live event. I don't want a party over message until the livestream ends and the page is refreshed.
-	    	vtimestamp();
-		} else if (islive !== isREALLYlive) { //The messages for live events don't update like the messages in v/atimestamp().
-		    document.getElementById("refresh").style.display = 'none';
-    	    document.getElementById("friends").innerHTML = "There's no party here!<br />Go home, you rascally kids!";	    
-		} else {
-		    document.getElementById("refresh").style.display = 'none';
-		    document.getElementById("friends").innerHTML = 'This is a YouTube live event!';
-		}
+        if (islive === false && isREALLYlive === false) { //I don't want vtimestamp() to run if it's a live event. I don't want a party over message until the livestream ends and the page is refreshed.
+            vtimestamp();
+        } else if (islive !== isREALLYlive) { //The messages for live events don't update like the messages in v/atimestamp().
+            document.getElementById("refresh").style.display = 'none';
+            document.getElementById("friends").innerHTML = "There's no party here!<br />Go home, you rascally kids!";
+        } else {
+            document.getElementById("refresh").style.display = 'none';
+            document.getElementById("friends").innerHTML = 'This is a YouTube live event!';
+        }
     }
     if (l1 === true && l2 === true && isaudio === true) {
         audioready();
@@ -80,7 +82,7 @@ function load_player() {
 }
 function timestamp_calc() {
     var now = new Date();
-    pre_timestamp = Number(now.getTime()/1000 - video_started);
+    pre_timestamp = Number(now.getTime() / 1000 - video_started);
     if (islive === true && isREALLYlive === true) {
         true_timestamp = null;
     } else {
@@ -141,7 +143,7 @@ function vtimestamp() { //I'm thinking vtimestamp() and atimestamp() could be co
 }
 function onYouTubeIframeAPIReady() {
     timestamp_calc();
-    if (true_timestamp >= 0 && true_timestamp < video_length && is_intermission === false && islive === false && isREALLYlive === false){
+    if (true_timestamp >= 0 && true_timestamp < video_length && is_intermission === false && islive === false && isREALLYlive === false) {
         player = new YT.Player('player', {
             height: '538',
             width: '956',
@@ -164,17 +166,17 @@ function onYouTubeIframeAPIReady() {
         });
     } else {
         player = null;
-    } 
+    }
 }
 function onPlayerReady(event) {
     if (islive === false && isREALLYlive === false) {
         setInterval(vtimestamp, 100);
-	if (pre_timestamp >= 0 && is_intermission === false){
-	    event.target.playVideo();
-    	}
+        if (pre_timestamp >= 0 && is_intermission === false) {
+            event.target.playVideo();
+        }
     } else {
-	    event.target.playVideo();
-	}
+        event.target.playVideo();
+    }
 }
 function onPlayerStateChange(event) {
 }

@@ -9,6 +9,7 @@
             max-width: 400px;
             display: grid;
         }
+
         input {
             margin-bottom: 15px;
         }
@@ -31,7 +32,7 @@
         </div>
         <label for="video" id="idl" style="display:none"><br />VideoID:</label>
         <input type="hidden" name="medialink" id="video" required>
-	<label for="live" id="livel" style="display:none"><br />Check this box if it's a livestream</label>
+        <label for="live" id="livel" style="display:none"><br />Check this box if it's a livestream</label>
         <input type="hidden" name="live" id="live" onclick="starttime()">
         <label for="afile" id="al" style="display:none"><br />Audio file link (MUST be .mp3):</label>
         <input type="hidden" name="medialink" id="afile" required>
@@ -69,7 +70,7 @@
                 };
 
                 payload['type'] = $('input[name=mediatype]:checked', 'form#info').val();
-		        payload['live'] = $('input#live:checked', 'form#info').val();
+                payload['live'] = $('input#live:checked', 'form#info').val();
                 payload['mp3_link'] = $('input#afile').val();
 
                 if ($('input#intermission').val()) {
