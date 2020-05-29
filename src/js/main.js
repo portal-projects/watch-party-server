@@ -1,6 +1,5 @@
 var l1 = false;
 var l2 = false;
-var l3 = false;
 var tag = document.createElement('script');
 var firstScriptTag = document.getElementsByTagName('script')[0];
 var player;
@@ -8,7 +7,10 @@ var itime;
 var ilength;
 var video_started;
 var video_length;
+var details;
 var isaudio;
+var islive;
+var isREALLYlive;
 var audiosrc;
 function getHost() {
     if (location.href.split('http://localhost:8080').length === 2) {
@@ -22,15 +24,35 @@ function getHost() {
 $.get(getHost() + "api/party_info", function (data) {
     itime = Number(data.intermission_time);
     ilength = Number(data.intermission_length);
+    islive = Boolean(data.live);
     video_started = Number(data.time);
     video_length = Number(data.length);
     isaudio = data.type === 'mp3';
     audiosrc = data.mp3_link;
     id = data.video_id;
-    l1 = l2 = l3 = true;
+    details = String(data.info_url);
+	//Turn into php. "isREALLYlive" will need a new, server-based definition.
+    $.getJSON(details, function(data) {
+        if (data["items"].length) {
+            if (data["items"][0]["contentDetails"]["duration"] == "P0D") {
+                isREALLYlive = true;
+            } else {
+                isREALLYlive = false;
+            }
+		    l2 = true;
+    		load_player(); //necessary?
+        } else {
+			//No private parties allowed!
+			isREALLYlive = false;
+	    	video_length = -1;
+		    l2 = true;
+    		load_player(); //necessary?
+        }
+    });
+	//^
+    l1 = true;
     load_player();
 });
-
 var true_timestamp;
 var hours;
 var minutes;
@@ -39,29 +61,42 @@ var is_intermission = false;
 var intermission_time;
 
 function load_player() {
-    if (l1 === true && l2 === true && l3 === true && isaudio === false) {
-        vtimestamp();
+    if (l1 === true && l2 === true && isaudio === false) {
         tag.src = "https://www.youtube.com/iframe_api";
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+		if (islive === false && isREALLYlive === false) { //I don't want vtimestamp() to run if it's a live event. I don't want a party over message until the livestream ends and the page is refreshed.
+	    	vtimestamp();
+		} else if (islive !== isREALLYlive) { //The messages for live events don't update like the messages in v/atimestamp().
+		    document.getElementById("refresh").style.display = 'none';
+    	    document.getElementById("friends").innerHTML = "There's no party here!<br />Go home, you rascally kids!";	    
+		} else {
+		    document.getElementById("refresh").style.display = 'none';
+		    document.getElementById("friends").innerHTML = 'This is a YouTube live event!';
+		}
     }
-    if (l1 === true && l2 === true && l3 === true && isaudio === true) {
+    if (l1 === true && l2 === true && isaudio === true) {
         audioready();
     }
 }
 function timestamp_calc() {
     var now = new Date();
-    if (ilength === 0 || itime > (now.getTime() / 1000) - video_started) {
-        true_timestamp = (Number(now.getTime()) / 1000 - video_started);
-        is_intermission = false;
-    } else if (itime <= (now.getTime() / 1000 - video_started) && itime + ilength > Math.ceil(now.getTime() / 1000 - video_started) + 0.1) {
-        true_timestamp = itime;
-        intermission_time = (itime + ilength) - (now.getTime() / 1000 - video_started);
-        is_intermission = true;
-    } else if (itime + ilength <= Math.ceil(now.getTime() / 1000 - video_started) + 0.1) {
-        true_timestamp = (Number(now.getTime()) / 1000 - video_started) - ilength;
-        is_intermission = false;
+    pre_timestamp = Number(now.getTime()/1000 - video_started);
+    if (islive === true && isREALLYlive === true) {
+        true_timestamp = null;
+    } else {
+        if (ilength === 0 || itime > pre_timestamp) {
+            true_timestamp = pre_timestamp;
+            is_intermission = false;
+        } else if (itime <= pre_timestamp && itime + ilength > Math.ceil(pre_timestamp) + 0.1) {
+            true_timestamp = itime;
+            intermission_time = (itime + ilength) - (pre_timestamp);
+            is_intermission = true;
+        } else if (itime + ilength <= Math.ceil(pre_timestamp) + 0.1) {
+            true_timestamp = pre_timestamp - ilength;
+            is_intermission = false;
+        }
     }
-    if (itime + ilength == Math.ceil(now.getTime() / 1000 - video_started)) {
+    if (itime + ilength == Math.ceil(pre_timestamp)) {
         iend();
     }
     var HMSTime = Math.abs(true_timestamp);
@@ -81,7 +116,7 @@ function iend() {
     }
 }
 //YouTube Player Code Below
-function vtimestamp() {
+function vtimestamp() { //I'm thinking vtimestamp() and atimestamp() could be combined, but I'm not in the mood right now.
     timestamp_calc();
     if (Math.floor(true_timestamp) == -2) {
         player.playVideo();
@@ -106,7 +141,7 @@ function vtimestamp() {
 }
 function onYouTubeIframeAPIReady() {
     timestamp_calc();
-    if (true_timestamp >= 0 && true_timestamp < video_length && is_intermission === false) {
+    if (true_timestamp >= 0 && true_timestamp < video_length && is_intermission === false && islive === false && isREALLYlive === false){
         player = new YT.Player('player', {
             height: '538',
             width: '956',
@@ -117,9 +152,7 @@ function onYouTubeIframeAPIReady() {
                 'onStateChange': onPlayerStateChange
             }
         });
-    } else if (true_timestamp >= video_length) {
-        player = null;
-    } else {
+    } else if (((pre_timestamp < 0 && isREALLYlive === false) || (islive === true && isREALLYlive === true)) && isREALLYlive === islive) {
         player = new YT.Player('player', {
             height: '538',
             width: '956',
@@ -129,13 +162,19 @@ function onYouTubeIframeAPIReady() {
                 'onStateChange': onPlayerStateChange
             }
         });
-    }
+    } else {
+        player = null;
+    } 
 }
 function onPlayerReady(event) {
-    setInterval(vtimestamp, 100);
-    if (true_timestamp >= 0 && is_intermission === false) {
-        event.target.playVideo();
-    }
+    if (islive === false && isREALLYlive === false) {
+        setInterval(vtimestamp, 100);
+	if (pre_timestamp >= 0 && is_intermission === false){
+	    event.target.playVideo();
+    	}
+    } else {
+	    event.target.playVideo();
+	}
 }
 function onPlayerStateChange(event) {
 }
