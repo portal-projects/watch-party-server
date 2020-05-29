@@ -5,6 +5,8 @@ if (isset($_POST['password'])) {
         'type' => null,
         'video_id' => null,
         'mp3_link' => null,
+		'info_url' => null,
+		'live' => null,
         'length' => 0,
         'time' => 0,
         'intermission_time' => 0,
@@ -24,6 +26,8 @@ if (isset($_POST['password'])) {
             $api_key = getenv('YOUTUBE_API_KEY');
             $id = $party_info['video_id'];
             $url = "https://www.googleapis.com/youtube/v3/videos?id={$id}&part=contentDetails&key={$api_key}";
+
+	    	$party_info['info_url'] = "https://www.googleapis.com/youtube/v3/videos?id={$id}&part=contentDetails&key={$api_key}"; //This part needs to be private, in a different php file.
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
