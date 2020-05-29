@@ -10,7 +10,7 @@ var video_length;
 var details;
 var isaudio;
 var islive;
-var isREALLYlive;
+var isREALLYlive = false;
 var audiosrc;
 function getHost() {
     if (location.href.split('http://localhost:8080').length === 2) {
@@ -31,8 +31,7 @@ $.get(getHost() + "api/party_info", function (data) {
     audiosrc = data.mp3_link;
     id = data.video_id;
     details = String(data.info_url);
-    //Turn into php. "isREALLYlive" will need a new, server-based definition.
-    if (islive) {
+	if (!isaudio) {
         $.get(getHost() + `api/video_length?video_id=${id}`, (videoLengthInfo) => {
             if (videoLengthInfo["items"].length) {
                 if (videoLengthInfo["items"][0]["contentDetails"]["duration"] == "P0D") {
@@ -50,8 +49,10 @@ $.get(getHost() + "api/party_info", function (data) {
                 load_player(); //necessary?
             }
         });
+    } else {
+        l2 = true;
+        load_player();
     }
-
     l1 = true;
     load_player();
 });
