@@ -5,6 +5,8 @@ if (isset($_POST['password'])) {
         'type' => null,
         'video_id' => null,
         'mp3_link' => null,
+        'info_url' => null,
+        'live' => null,
         'length' => 0,
         'time' => 0,
         'intermission_time' => 0,

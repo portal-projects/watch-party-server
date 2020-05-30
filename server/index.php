@@ -3,7 +3,7 @@
 require_once('../../../../app/vendor/autoload.php');
 
 $request = $_SERVER['REQUEST_URI'];
-$params = explode('/', $request);
+$params = explode('/', explode('?', $request)[0]);
 $route = $params[2];
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -14,6 +14,11 @@ try {
         }
         if ($method === 'POST') {
             require_once('./api/party_info/post.php');
+        }
+    }
+    if ($route === 'video_length') {
+        if ($method === 'GET') {
+            require_once('./api/video_length/get.php');
         }
     }
 } catch (Exception $e) {
